@@ -10,7 +10,9 @@ The mental model is kustomize-style overlays for AI agent config.
 
 ## Quickstart
 
-Your personal config is sensitive, so you want it in a **private** repo. Do not click "Fork": GitHub will not let you change a fork's visibility later. Click **"Use this template"** on [github.com/idetra/agentdock](https://github.com/idetra/agentdock) and choose private. That creates a brand-new private repo with no fork relationship.
+Your personal config is sensitive, so you want it in a **private** repo. Do not click "Fork": GitHub will not let you change a fork's visibility later.
+
+Click **"Use this template"** on [github.com/idetra/agentdock](https://github.com/idetra/agentdock) and choose private. That creates a brand-new private repo with no fork relationship.
 
 Then on any machine:
 
