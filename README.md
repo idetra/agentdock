@@ -10,30 +10,21 @@ The mental model is kustomize-style overlays for AI agent config.
 
 ## Quickstart
 
-Your personal config is sensitive, so you want it in a **private** repo. GitHub will not let you change a fork's visibility, so do not click "Fork". Use one of these instead:
+Your personal config is sensitive, so you want it in a **private** repo. Do not click "Fork": GitHub will not let you change a fork's visibility later. Click **"Use this template"** on [github.com/idetra/agentdock](https://github.com/idetra/agentdock) and choose private. That creates a brand-new private repo with no fork relationship.
 
-**Recommended: "Use this template"** (on the public agentdock repo page) creates a brand-new private repo with the same files and no fork relationship. Then on any machine:
+Then on any machine:
 
 ```bash
 git clone git@github.com:<you>/agentdock.git ~/agentdock
 cd ~/agentdock
+git remote add upstream git@github.com:idetra/agentdock.git
 ./agentdock claude apply
 ```
 
-**Alternative: manual clone-and-repoint** if the template button is not available:
+Day-to-day:
 
-```bash
-# 1. Create an empty private repo (web UI or: gh repo create <you>/agentdock --private)
-# 2. Clone the public template, rename remotes, push:
-git clone git@github.com:<original-owner>/agentdock.git ~/agentdock
-cd ~/agentdock
-git remote rename origin upstream
-git remote add origin git@github.com:<you>/agentdock.git
-git push -u origin main
-./agentdock claude apply
-```
-
-Either way, `git pull upstream main` later picks up template updates; `git pull/push origin main` syncs your personal config between machines.
+- `git pull upstream main` picks up template updates from idetra/agentdock.
+- `git pull origin main` and `git push origin main` sync your personal config between your machines.
 
 That's it. No installer. `apply` creates `~/.claude/` if needed and backs up anything it overwrites.
 
