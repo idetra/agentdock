@@ -14,13 +14,23 @@ Your personal config is sensitive, so you want it in a **private** repo. Do not 
 
 Click **"Use this template"** on [github.com/idetra/agentdock](https://github.com/idetra/agentdock) and choose private. That creates a brand-new private repo with no fork relationship.
 
-Then on any machine:
+**First machine** (the one where your `~/.claude/` already has the setup you want to keep):
 
 ```bash
 git clone git@github.com:<you>/agentdock.git ~/agentdock
 cd ~/agentdock
 git remote add upstream git@github.com:idetra/agentdock.git
-./agentdock claude apply
+./agentdock claude capture     # pull ~/.claude/ into adapters/claude/personal/
+git add -A && git commit -m "capture" && git push
+```
+
+**Any other machine** (where you want that setup deployed):
+
+```bash
+git clone git@github.com:<you>/agentdock.git ~/agentdock
+cd ~/agentdock
+git remote add upstream git@github.com:idetra/agentdock.git
+./agentdock claude apply       # write adapters/claude/personal/ into ~/.claude/
 ```
 
 Day-to-day:
@@ -28,7 +38,7 @@ Day-to-day:
 - `git pull upstream main` picks up template updates from idetra/agentdock.
 - `git pull origin main` and `git push origin main` sync your personal config between your machines.
 
-That's it. No installer. `apply` creates `~/.claude/` if needed and backs up anything it overwrites.
+No installer. `apply` creates `~/.claude/` if needed and backs up anything it overwrites.
 
 ---
 
