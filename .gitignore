@@ -1,0 +1,26 @@
+# Auth and credentials (defensive: should never be in repo)
+**/.credentials.json
+**/credentials.json
+.claude.json
+~/.claude.json
+
+# Backups created by apply.sh
+*.bak
+*.bak.*
+
+# Live state (never tracked)
+live/
+.live/
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Editor junk
+.vscode/
+.idea/
+*.swp
+*~
+
+z-refs/
+.claude/

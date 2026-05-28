@@ -1,0 +1,34 @@
+{
+  "tool": "claude",
+  "display_name": "Claude Code",
+  "target_dir": "~/.claude",
+  "target_dir_env_override": "CLAUDE_CONFIG_DIR",
+  "categories": {
+    "memory": {
+      "type": "sentinel",
+      "files": ["CLAUDE.md", "rules/*.md"],
+      "sentinel_start": "# --- agentdock personal config start ---",
+      "sentinel_end": "# --- agentdock personal config end ---"
+    },
+    "settings": {
+      "type": "merge",
+      "files": ["settings.json"]
+    },
+    "skills": {
+      "type": "copy",
+      "files": ["skills/**"]
+    },
+    "agents": {
+      "type": "copy",
+      "files": ["agents/*.md"]
+    },
+    "commands": {
+      "type": "copy",
+      "files": ["commands/*.md"]
+    },
+    "output-styles": {
+      "type": "copy",
+      "files": ["output-styles/*.md"]
+    }
+  }
+}

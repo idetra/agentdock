@@ -1,0 +1,111 @@
+#!/usr/bin/env bash
+# agentdock: personal overlay manager for agentic coding tool configs.
+# This is the sole public entry point; it dispatches to scripts/<verb>.sh.
+
+set -euo pipefail
+
+# Resolve the real directory of this script, following symlinks portably.
+# readlink without -f works on macOS (no coreutils needed).
+_self_dir() {
+  local src="$0" dir
+  while [ -L "$src" ]; do
+    dir="$(cd "$(dirname "$src")" && pwd -P)"
+    src="$(readlink "$src")"
+    case "$src" in /*) ;; *) src="$dir/$src" ;; esac
+  done
+  cd "$(dirname "$src")" && pwd -P
+}
+SELF_DIR="$(_self_dir)"
+REPO_ROOT="$SELF_DIR"
+# shellcheck source=lib/common.sh
+. "$REPO_ROOT/lib/common.sh"
+
+# ---------------------------------------------------------------------------
+# Help
+# ---------------------------------------------------------------------------
+
+show_help() {
+  cat <<'EOF'
+agentdock: personal overlay manager for agentic coding tool configs.
+
+Usage:
+  agentdock                              show this help, list adapters
+  agentdock list                         list configured adapters
+  agentdock <tool>                       show help for that adapter
+  agentdock <tool> apply   [paths...]    repo -> machine
+  agentdock <tool> capture [paths...]    machine -> repo
+  agentdock <tool> remove  [paths...]    restore live to base only
+  agentdock <tool> status                color-coded overview
+  agentdock <tool> diff    <path>        detailed diff for one item
+
+Global options (all verbs):
+  -h, --help
+  -v, --verbose
+  -q, --quiet
+  -n, --dry-run
+  -i, --interactive
+  --only <categories>    comma-separated category whitelist
+  --skip <categories>    comma-separated category blacklist
+  --no-color             disable ANSI colors (also: set NO_COLOR env var)
+
+Configured adapters:
+EOF
+  list_adapters
+}
+
+# ---------------------------------------------------------------------------
+# Routing
+# ---------------------------------------------------------------------------
+
+if [ $# -eq 0 ]; then
+  show_help
+  exit 0
+fi
+
+case "$1" in
+  -h|--help)
+    show_help
+    exit 0 ;;
+  list)
+    check_jq
+    list_adapters
+    exit 0 ;;
+  -*)
+    printf 'Error: Unknown option: %s\n' "$1" >&2
+    show_help >&2
+    exit 1 ;;
+esac
+
+TOOL="$1"
+shift
+
+validate_tool "$TOOL"
+
+if [ $# -eq 0 ]; then
+  cat <<EOF
+Usage: agentdock $TOOL <verb> [options] [paths...]
+
+Verbs:
+  apply   [paths...]     apply base + personal to live config
+  capture [paths...]     capture live config changes to personal
+  remove  [paths...]     remove personal overlay from live config
+  status                 show sync status
+  diff    <path>         detailed diff for one item
+
+Run 'agentdock $TOOL <verb> --help' for verb-specific options.
+Run 'agentdock $TOOL status' to see current state.
+EOF
+  exit 0
+fi
+
+VERB="$1"
+shift
+
+SCRIPT="$REPO_ROOT/scripts/$VERB.sh"
+if [ ! -f "$SCRIPT" ]; then
+  printf 'Error: Unknown verb: '\''%s'\''. Valid verbs: apply, capture, remove, status, diff\n' \
+    "$VERB" >&2
+  exit 1
+fi
+
+exec "$SCRIPT" "$TOOL" "$@"
