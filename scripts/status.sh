@@ -203,9 +203,9 @@ check_sentinel_state() {
       do_sentinel_inject "$base_file" "$personal_file" "$expected_tmp" \
         "$sentinel_start" "$sentinel_end"
     else
-      printf '%s\n' "$sentinel_start" > "$expected_tmp"
-      cat "$personal_file" >> "$expected_tmp"
-      printf '%s\n' "$sentinel_end" >> "$expected_tmp"
+      # no base file: apply just copies personal verbatim (no sentinel wrapping).
+      # mirror that here so status does not falsely report drift.
+      cp "$personal_file" "$expected_tmp"
     fi
 
     if cmp -s "$expected_tmp" "$live_file" 2>/dev/null; then

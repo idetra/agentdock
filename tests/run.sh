@@ -352,6 +352,39 @@ test_idempotent_apply() {
   rm -rf "$tmp"
 }
 
+test_status_sentinel_no_base_no_drift() {
+  # Regression: when a sentinel category has no base file, apply just copies
+  # personal verbatim (no sentinel wrapping). status used to falsely report
+  # drift because it constructed an expected file wrapped in sentinel markers.
+  printf '\n[status: sentinel with no base file reports sync, not drift]\n'
+  local tmp
+  tmp="$(mktemp -d)"
+  setup_test_adapter "$tmp"
+
+  rm -f "$tmp/adapters/claude/base/CLAUDE.md"
+
+  REPO_ROOT="$tmp" AGENTDOCK_TEST_LIVE="$tmp/live" \
+    bash "$tmp/scripts/apply.sh" claude --no-color --only memory --no-backup
+
+  local status_output
+  status_output="$(REPO_ROOT="$tmp" AGENTDOCK_TEST_LIVE="$tmp/live" \
+    bash "$tmp/scripts/status.sh" claude --no-color --only memory 2>&1)"
+
+  if echo "$status_output" | grep -q "drift"; then
+    fail "status falsely reports drift (no base, personal == live)"
+  else
+    pass "status: no drift reported when personal matches live (no base)"
+  fi
+
+  if echo "$status_output" | grep -qE '✓.*CLAUDE\.md'; then
+    pass "status: CLAUDE.md reported as in sync"
+  else
+    fail "status: CLAUDE.md not reported as in sync"
+  fi
+
+  rm -rf "$tmp"
+}
+
 # ---------------------------------------------------------------------------
 # Run all tests
 # ---------------------------------------------------------------------------
@@ -378,6 +411,7 @@ test_capture_merge
 test_remove_sentinel
 test_remove_copy
 test_idempotent_apply
+test_status_sentinel_no_base_no_drift
 
 # Platform compatibility tests
 printf '\n=== Platform tests ===\n'
